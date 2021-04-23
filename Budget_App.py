@@ -1,50 +1,44 @@
-class Budget:
-    # Class initialization
-    def __init__(self):
-        self.balance = 0
-        print("Hello!, This is the Budget App!")
+class Category:
+  def __init__(self, name):
+    self.name = name
+    self.book = list()
 
-#   Class Methods
-    def deposit(self):
-        print("*********Welcome to the Deposit method**********")
-        category = input("Kindly enter budget category :\n")
-        amount = int(input("Enter amount to be deposited: \n"))
-        self.balance += amount
-        print(f"\n You just deposited: #{amount} into {category} category, Your new total balance is : #{self.balance}")
+  def withdraw(self, amount, description = ""):
+    if self.isSufficient(amount):
+      self.book.append({"amount": -amount, "description": description})
+      return True
+    else:
+      return False
 
-    def withdraw(self):
-        print("***********Welcome to the Withdraw method*************")
-        category = input("Kindly enter budget category :\n")
-        amount = int(input("Enter amount to be withdrawn:\n"))
-        if self.balance >= amount:
-            self.balance -= amount
-            print(f"\n You withdrew: #{amount} from the {category} category, Your remaining balance is #{self.balance}")
-        else: 
-            print("\n Insufficient balance ")
-    
-    def transfer(self, amount) :
-        print("***********Welcome to the transfer method**********")
-        amount = int(input("How much do you want to transfer?"))
-        category = input("Which budget category are you transferring funds to ?\n")
-        if self.balance >= amount:
-            self.balance -= amount
-            print(f"You successfully transferred #{amount} to {category} category!")
-        else:
-            print("\n Insufficient balance")
+  def deposit(self, amount, description = ""):
+    self.book.append({"amount": amount, "description": description})
 
-    def get_balance(self):
-        print("*********You can view you balance here***********")
-        balance= input("Kindly press the enter key to view balance \n")
-        print(f"Your total balance is #{self.balance} ")
+  def check_funds(self):
+    total = 0
+    for item in self.book:
+      total += item['amount']
+    return total
 
- 
- 
-# instance object of class
-inst = Budget()
+  def transfer(self, amount, target_category):
+    if self.isSufficient(amount):
+      self.withdraw(amount, f"Transfer to {target_category.name}")
+      target_category.deposit(amount, f"Transfer from {self.name}")
+      return True
+    else:
+      return False
 
-#Calling methods using the instance created
-inst.deposit()
-inst.withdraw()
-inst.transfer(2000)
-inst.get_balance()
-
+  def isSufficient(self, amount):
+    if amount <= self.check_funds():
+      return True
+    else:
+      return False
+      
+  def __str__(self):
+    title = f"{self.name:*^34}\n"
+    body = ""
+    ttotal = 0
+    for item in self.book:
+      body += item["description"][:23].ljust(23) + str('{:.2f}'.format(item["amount"]))[:7].rjust(10) + '\n'
+      ttotal += item["amount"]
+    table = title + body + f"Total: {ttotal:.2f}"
+    return table
